@@ -1,32 +1,41 @@
 @import "tailwindcss";
 
 :root {
-    --primary-color: linear-gradient(135deg, #e0f7fa, #fff8e1, #fce4ec);
-    --theme-button-bg-img: url(./images/dark-mode-img.png);
-    --aboutMe-developer-img: url(./images/developer-img-dark.svg);
-    --theme-button-bg-size: 25px 25px;
-    --theme-button-bg-margin: 5px;
-    --theme-button-bg-color: rgba(0, 172, 193, 0.8);
-    --text-color-a: #1a237e;
-    --border-color: rgba(0, 172, 193, 0.8);
-    --boxes-color: rgba(255, 213, 79, 0.7);
-    --header-bg-color: rgba(255, 183, 77, 0.8);
+    --primary-color: #f3f8ff;
+    /* Soft cool white-blue */
+    --theme-button-bg-size: 28px 28px;
+    --theme-button-bg-margin: 4px;
+    --theme-button-bg-color: rgba(30, 136, 229, 0.85);
+    /* Vivid blue */
+    --text-color-a: #0d47a1;
+    /* Deep Indigo */
+    --border-color: rgba(30, 136, 229, 0.6);
+    /* Soft blue border */
+    --boxes-color: rgba(129, 212, 250, 0.3);
+    /* Light cyan background */
+    --header-bg-color: rgba(100, 181, 246, 0.8);
+    /* Lighter blue */
 }
 
 :root.dark {
-    --primary-color: linear-gradient(135deg, #0d47a1, #1b1b2f, #000000);
-    --theme-button-bg-img: url(./images/light-mode-img.png);
-    --aboutMe-developer-img: url(./images/developer-img-light.svg);
-    --theme-button-bg-color: rgba(255, 213, 79, 0.7);
+    --primary-color: #0f172a;
+    /* Deep navy */
+    --theme-button-bg-color: rgba(41, 182, 246, 0.85);
+    /* Light blue */
     --theme-button-bg-size: 35px 35px;
     --theme-button-bg-margin: 0px;
-    --text-color-a: #f1f1f1;
-    --border-color: #9575cd;
-    --boxes-color: rgba(255, 112, 67, 0.3);
-    --header-bg-color: rgba(55, 71, 79, 0.95);
+    --text-color-a: #e0f2f1;
+    /* Soft teal */
+    --border-color: rgba(129, 140, 248, 0.7);
+    /* Indigo-blue */
+    --boxes-color: rgba(94, 234, 212, 0.1);
+    /* Teal-gray blend */
+    --header-bg-color: rgba(30, 41, 59, 0.95);
+    /* Almost black blue */
 }
 
 body {
-    transition: 0.5s;
+    transition: background 0.5s ease;
     background: var(--primary-color);
+    color: var(--text-color-a);
 }

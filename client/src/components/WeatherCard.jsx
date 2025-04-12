@@ -1,103 +1,120 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Calendar, Droplets, Thermometer, Wind } from "lucide-react";
 
-function WeatherCard({ weatherData, forecastData }) {
-  const [theme, setTheme] = useState("light");
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) setTheme(storedTheme);
-  }, []);
+const WeatherCard = ({ weatherData, forecastData }) => {
+  if (!weatherData) return null;
 
   const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString("en-US", { weekday: "short" });
+    try {
+      const date = new Date(timestamp);
+      return new Intl.DateTimeFormat("en-IN", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      }).format(date);
+    } catch (error) {
+      return "Unknown date";
+    }
   };
 
+  const getWeatherIcon = (iconCode) =>
+    iconCode
+      ? `http://openweathermap.org/img/wn/${iconCode}@2x.png`
+      : "";
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[var(--boxes-color)] p-6 rounded-2xl shadow-lg text-[var(--text-color-a)] transition-all duration-300">
-      <div>
-        <section>
-          <div className="space-y-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-3xl font-bold">
-                  {weatherData.city}, {weatherData.country}
-                </h2>
-                <p className="text-sm opacity-80">
-                  {new Date().toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
+    <div className="w-full space-y-6 ">
+      {/* Main Weather Card */}
+      <div className="rounded-lg border bg-card text-card-foreground shadow-lg overflow-hidden">
+        <div className="p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-3xl font-bold mb-1">{weatherData.city || "Unknown Location"}</h2>
+              <div className="flex items-center text-sm space-x-2 text-blue-100">
+                <Calendar className="h-4 w-4" />
+                <span>{formatDate(Date.now())}</span>
               </div>
+            </div>
+            <div className="text-right">
+              <div className="text-4xl font-bold">
+                {Math.round(weatherData.temperature)} °C
+              </div>
+              <div className="text-sm text-blue-100">
+                Feels like {Math.round(weatherData.feels_like)} °C
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-6">
+            {weatherData.icon && (
               <img
-                src={`https://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
-                alt={weatherData.description}
-                className="h-16 w-16"
+                src={getWeatherIcon(weatherData.icon)}
+                alt={weatherData.description || "Weather icon"}
+                className="w-16 h-16"
               />
+            )}
+            <div>
+              <div className="text-lg font-medium capitalize">{weatherData.description}</div>
+              <div className="text-sm text-muted-foreground">{weatherData.condition}</div>
             </div>
+          </div>
 
-            <div className="flex justify-between items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
+              <Wind className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
               <div>
-                <div className="text-5xl font-bold">
-                  {Math.round(weatherData.temperature)}°C
-                </div>
-                <div className="text-sm opacity-80">
-                  Feels like: {Math.round(weatherData.feels_like)}°C
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-semibold text-lg">
-                  {weatherData.condition}
-                </div>
-                <div className="text-sm capitalize opacity-70">
-                  {weatherData.description}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border-color)]">
-              <div className="text-center">
-                <div className="text-sm opacity-70">Humidity</div>
-                <div className="font-medium">{weatherData.humidity}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm opacity-70">Wind Speed</div>
+                <div className="text-sm text-muted-foreground">Wind</div>
                 <div className="font-medium">{weatherData.wind} m/s</div>
               </div>
             </div>
+            <div className="flex items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
+              <Droplets className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
+              <div>
+                <div className="text-sm text-muted-foreground">Humidity</div>
+                <div className="font-medium">{weatherData.humidity}%</div>
+              </div>
+            </div>
+            <div className="flex items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
+              <Thermometer className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
+              <div>
+                <div className="text-sm text-muted-foreground">Pressure</div>
+                <div className="font-medium">N/A</div>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
 
-      <div>
-        <section>
+      {/* Forecast Cards */}
+      {forecastData && forecastData.length > 0 && (
+        <div>
           <h3 className="text-xl font-semibold mb-4">5-Day Forecast</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {forecastData.map((day, index) => (
-              <div
-                key={index}
-                className="rounded-xl p-4 text-center bg-[var(--header-bg-color)] text-[var(--text-color-a)] shadow"
-              >
-                <div className="font-medium">{formatDate(day.date)}</div>
-                <img
-                  src={`https://openweathermap.org/img/wn/${day.icon}.png`}
-                  alt={day.description}
-                  className="h-12 w-12 mx-auto my-2"
-                />
-                <div className="font-bold text-lg">
-                  {Math.round(day.temperature)}°C
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {forecastData.slice(0, 5).map((day, index) => (
+              <div key={index} className="rounded-lg border bg-card text-card-foreground shadow">
+                <div className="p-3 bg-gradient-to-br from-indigo-400 to-blue-500 text-white text-center">
+                  <p className="font-medium">{formatDate(day.date)}</p>
                 </div>
-                <div className="text-xs opacity-80">{day.condition}</div>
+                <div className="p-4 flex flex-col items-center">
+                  {day.icon && (
+                    <img
+                      src={getWeatherIcon(day.icon)}
+                      alt={day.description}
+                      className="w-12 h-12"
+                    />
+                  )}
+                  <p className="text-lg font-bold mt-2">{Math.round(day.temperature)}°C</p>
+                  <p className="text-xs text-muted-foreground capitalize mt-1">{day.description}</p>
+                </div>
               </div>
             ))}
           </div>
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default WeatherCard;
