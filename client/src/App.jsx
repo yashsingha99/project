@@ -11,7 +11,7 @@ function App() {
   const [error, setError] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [theme, setTheme] = useState("light");
-
+  const URL = import.meta.env.VITE_SERVER;
   const fetchData = async (searchCity) => {
     if (!searchCity) return;
 
@@ -19,20 +19,16 @@ function App() {
     setError(null);
 
     try {
-      const res = await axios.get(
-        `https://project-yftk.onrender.com/api/weather?city=${searchCity}`
-      );
-      
+      const res = await axios.get(`${URL}/api/weather?city=${searchCity}`);
+
       if (res.data) {
         setWeatherData(res.data);
       } else {
         throw new Error("No weather data received");
       }
 
-      const resdata = await axios.get(
-        `https://project-yftk.onrender.com/api/forecast?city=${searchCity}`
-      );
-      
+      const resdata = await axios.get(`${URL}/api/forecast?city=${searchCity}`);
+
       if (resdata.data) {
         setForecastData(resdata.data);
       } else {
@@ -71,9 +67,12 @@ function App() {
 
   useEffect(() => {
     // Apply saved theme
-    const savedTheme = localStorage.getItem("theme") || 
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    
+    const savedTheme =
+      localStorage.getItem("theme") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+
     setTheme(savedTheme);
     document.documentElement.classList.toggle("dark", savedTheme === "dark");
 
@@ -81,7 +80,7 @@ function App() {
     try {
       const history = JSON.parse(localStorage.getItem("searchHistory")) || [];
       setSearchHistory(history);
-      
+
       // Auto-load last searched city if available
       if (history.length > 0) {
         setCity(history[0]);
@@ -98,21 +97,28 @@ function App() {
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
         <div className="flex items-center">
           <CloudRain className="h-8 w-8 mr-3 text-blue-600 dark:text-blue-400" />
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-300">Weather Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-300">
+            Weather Dashboard
+          </h1>
         </div>
         <button
           className="rounded-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:shadow-md transition-all"
           onClick={toggleTheme}
           aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
         >
-          {theme === "light" ? 
-            <Moon className="h-5 w-5 text-yellow-400" /> : 
-            <Sun className="h-5 w-5 text-yellow-400" />}
+          {theme === "light" ? (
+            <Moon className="h-5 w-5 text-yellow-400" />
+          ) : (
+            <Sun className="h-5 w-5 text-yellow-400" />
+          )}
         </button>
       </div>
 
       <section className="pt-2 md:pt-4 mb-6 md:mb-8  ">
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col sm:flex-row gap-3"
+        >
           <input
             type="text"
             value={city}
@@ -174,12 +180,18 @@ function App() {
         </div>
       ) : weatherData ? (
         <WeatherCard weatherData={weatherData} forecastData={forecastData} />
-      ) : !error && (
-        <div className="text-center py-12 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-          <CloudRain className="h-16 w-16 mx-auto text-blue-500 dark:text-blue-400 mb-4" />
-          <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">Search for a city to see the weather</h3>
-          <p className="text-gray-500 dark:text-gray-400">Enter a city name above to get current weather and forecast</p>
-        </div>
+      ) : (
+        !error && (
+          <div className="text-center py-12 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+            <CloudRain className="h-16 w-16 mx-auto text-blue-500 dark:text-blue-400 mb-4" />
+            <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Search for a city to see the weather
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              Enter a city name above to get current weather and forecast
+            </p>
+          </div>
+        )
       )}
     </div>
   );
